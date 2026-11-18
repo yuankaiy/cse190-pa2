@@ -22,7 +22,8 @@ export async function collect() {
     try { out["userAgent"] = navigator.userAgent; } catch { out["userAgent"] = null; }
     try { out["language"] = navigator.language; } catch { out["language"] = null; }
     try { out["languages"] = navigator.languages; } catch { out["languages"] = null; }
-    try { out["plugins"] = navigator.plugins; } catch { out["plugins"] = null; }
+    try { out["plugins"] = Array.from(navigator.plugins, p => p.name); } catch { out["plugins"] = null; }
+    try { out["mimeTypes"] = Array.from(navigator.mimeTypes, m => m.type); } catch { out["mimeTypes"] = null; }
     try { out["platform"] = navigator.platform; } catch { out["platform"] = null; }
     try { out["vendor"] = navigator.vendor; } catch { out["vendor"] = null; }
     try { out["hardwareConcurrency"] = navigator.hardwareConcurrency; } catch { out["hardwareConcurrency"] = null; }
@@ -31,6 +32,7 @@ export async function collect() {
     // Physical screen size the browser reports
     try { out["screenWidth"] = screen.width; } catch { out["screenWidth"] = null; }
     try { out["screenHeight"] = screen.height; } catch { out["screenHeight"] = null; }
+    try { out["screenColorDepth"] = screen.colorDepth; } catch { out["screenColorDepth"] = null; }
 
     // Space left after OS taskbars/docks (may equal width/height in headless browsers)
     try { out["availWidth"] = screen.availWidth; } catch { out["availWidth"] = null; }
@@ -44,6 +46,30 @@ export async function collect() {
     try { out["orientation"] = screen.orientation.type; } catch { out["orientation"] = null; }
     try { out["orientationAngle"] = screen.orientation.angle; } catch { out["orientationAngle"] = null; }
 
+    /** WINDOW API */   
+    try { out["dpr"] = window.devicePixelRatio; } catch { out["dpr"] = null; }
+    try { out["innerWidth"] = window.innerWidth; } catch { out["innerWidth"] = null; }
+    try { out["innerHeight"] = window.innerHeight; } catch { out["innerHeight"] = null; }
+    try { out["outerWidth"] = window.outerWidth; } catch { out["outerWidth"] = null; }
+    try { out["outerHeight"] = window.outerHeight; } catch { out["outerHeight"] = null; }
+    
+    try {
+    out["prefersColorScheme"] =
+        matchMedia("(prefers-color-scheme: dark)").matches ? "dark" :
+        matchMedia("(prefers-color-scheme: light)").matches ? "light" : "no-preference";
+        } catch { out["prefersColorScheme"] = null; }
+    try { out["prefersReducedMotion"] = window.matchMedia("(prefers-reduced-motion: reduce)").matches; } catch { out["prefersReducedMotion"] = null; }
+    try { out["prefersContrast"] = window.matchMedia("(prefers-contrast: more)").matches ? "more" : window.matchMedia("(prefers-contrast: less)").matches ? "less" : "no-preference"; } catch { out["prefersContrast"] = null; }
+    try { out["prefersReducedTransparency"] = window.matchMedia("(prefers-reduced-transparency: reduce)").matches; } catch { out["prefersReducedTransparency"] = null; }
+    try { out["forcedColors"] = matchMedia("(forced-colors: active)").matches; } catch { out["forcedColors"] = null; }
+    try { out["pointerCoarse"] = matchMedia("(pointer: coarse)").matches; } catch { out["pointerCoarse"] = null; }
+    try { out["hoverNone"] = matchMedia("(hover: none)").matches; } catch { out["hoverNone"] = null; }
+
+    /** INTL API */
+    try { out["timeZone"] = Intl.DateTimeFormat().resolvedOptions().timeZone; } catch { out["timeZone"] = null; }
+    try { out["intlLocale"] = Intl.DateTimeFormat().resolvedOptions().locale; } catch { out["intlLocale"] = null; }
+    try { out["calendar"] = Intl.DateTimeFormat().resolvedOptions().calendar; } catch { out["calendar"] = null; }
+    try { out["numberingSystem"] = Intl.DateTimeFormat().resolvedOptions().numberingSystem; } catch { out["numberingSystem"] = null; }
 
     
     return fingerprint(out);
